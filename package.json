@@ -2,10 +2,11 @@
   "name": "express-mesto",
   "version": "1.0.0",
   "description": "## Директории",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "npx eslint"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
@@ -19,10 +20,17 @@
   },
   "homepage": "https://github.com/AnSkvortsova/express-mesto#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^6.0.4"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
-    "eslint-plugin-react": "^7.25.1"
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.25.1",
+    "nodemon": "^2.0.12",
+    "prettier": "2.3.2"
   }
 }
