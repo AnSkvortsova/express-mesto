@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('./cards', routerCards);
+app.use('/cards', routerCards);
 app.use('/users', routerUsers);
 
 app.listen(PORT, () => {

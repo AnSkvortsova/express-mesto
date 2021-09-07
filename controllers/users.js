@@ -5,6 +5,7 @@ const getUser = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
+        return;
       }
       res.send({ data: user });
     })
@@ -28,6 +29,7 @@ const createUser = (req, res) => {
             .map((error) => error.message)
             .join(', ')}`,
         });
+        return;
       }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
@@ -43,6 +45,7 @@ const updateProfile = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
+        return;
       }
       res.send({ data: user });
     })
@@ -53,6 +56,7 @@ const updateProfile = (req, res) => {
             .map((error) => error.message)
             .join(', ')}`,
         });
+        return;
       }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
@@ -68,6 +72,7 @@ const updateAvatar = (req, res) => {
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь не найден' });
+        return;
       }
       res.send({ data: user });
     })
@@ -78,6 +83,7 @@ const updateAvatar = (req, res) => {
             .map((error) => error.message)
             .join(', ')}`,
         });
+        return;
       }
       res.status(500).send({ message: 'Произошла ошибка' });
     });
