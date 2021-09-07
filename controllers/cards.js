@@ -1,9 +1,14 @@
 const Card = require('../models/card');
+const {
+  findUserError,
+  findDefaultError,
+  findValidationError,
+} = require('../utils/errors');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 const createCard = (req, res) => {
@@ -11,28 +16,16 @@ const createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: `${Object.values(err.errors)
-            .map((error) => error.message)
-            .join(', ')}`,
-        });
-        return;
-      }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      findValidationError(err, res);
     });
 };
 
 const removeCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: card });
+      findUserError(card, res);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 const likeCard = (req, res) => {
@@ -42,13 +35,9 @@ const likeCard = (req, res) => {
     { new: true }
   )
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: card });
+      findUserError(card, res);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 const dislikeCard = (req, res) => {
@@ -58,13 +47,9 @@ const dislikeCard = (req, res) => {
     { new: true }
   )
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: card });
+      findUserError(card, res);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 module.exports = {

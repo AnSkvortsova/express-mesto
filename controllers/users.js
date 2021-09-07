@@ -1,21 +1,22 @@
 const User = require('../models/user');
+const {
+  findUserError,
+  findDefaultError,
+  findValidationError,
+} = require('../utils/errors');
 
 const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: user });
+      findUserError(user, res);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => findDefaultError(res));
 };
 
 const createUser = (req, res) => {
@@ -23,15 +24,7 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: `${Object.values(err.errors)
-            .map((error) => error.message)
-            .join(', ')}`,
-        });
-        return;
-      }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      findValidationError(err, res);
     });
 };
 
@@ -43,22 +36,10 @@ const updateProfile = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: user });
+      findUserError(user, res);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: `${Object.values(err.errors)
-            .map((error) => error.message)
-            .join(', ')}`,
-        });
-        return;
-      }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      findValidationError(err, res);
     });
 };
 
@@ -70,22 +51,10 @@ const updateAvatar = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-        return;
-      }
-      res.send({ data: user });
+      findUserError(user, res);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({
-          message: `${Object.values(err.errors)
-            .map((error) => error.message)
-            .join(', ')}`,
-        });
-        return;
-      }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      findValidationError(err, res);
     });
 };
 
