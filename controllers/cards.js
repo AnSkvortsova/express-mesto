@@ -1,10 +1,35 @@
 const Card = require('../models/card');
-const {
-  findUserError,
-  findDefaultError,
-  findValidationError,
-} = require('../utils/errors');
 
+// ОШИБКИ
+const findCardError = (card, res) => {
+  if (!card) {
+    res.status(404).send({ message: 'Карточка не найдена' });
+    return;
+  }
+  res.send({ data: card });
+};
+
+const findDefaultError = (res) => {
+  res.status(500).send({ message: 'Произошла ошибка' });
+};
+
+const findValidationError = (err, res) => {
+  if (err.name === 'ValidationError') {
+    res.status(400).send({ message: err.message });
+    return;
+  }
+  findDefaultError(res);
+};
+
+const findCastError = (err, res) => {
+  if (err.name === 'CastError') {
+    res.status(400).send({ message: 'Переданы некорректные данные' });
+    return;
+  }
+  findDefaultError(res);
+}
+
+// КОНТРОЛЛЕРЫ
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ cards }))
@@ -23,9 +48,9 @@ const createCard = (req, res) => {
 const removeCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      findUserError(card, res);
+      findCardError(card, res);
     })
-    .catch(() => findDefaultError(res));
+    .catch((err) => findCastError(err, res));
 };
 
 const likeCard = (req, res) => {
@@ -35,9 +60,9 @@ const likeCard = (req, res) => {
     { new: true }
   )
     .then((card) => {
-      findUserError(card, res);
+      findCardError(card, res);
     })
-    .catch(() => findDefaultError(res));
+    .catch((err) => findCastError(err, res));
 };
 
 const dislikeCard = (req, res) => {
@@ -47,9 +72,9 @@ const dislikeCard = (req, res) => {
     { new: true }
   )
     .then((card) => {
-      findUserError(card, res);
+      findCardError(card, res);
     })
-    .catch(() => findDefaultError(res));
+    .catch((err) => findCastError(err, res));
 };
 
 module.exports = {

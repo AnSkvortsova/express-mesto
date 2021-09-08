@@ -1,16 +1,41 @@
 const User = require('../models/user');
-const {
-  findUserError,
-  findDefaultError,
-  findValidationError,
-} = require('../utils/errors');
 
+// ОШИБКИ
+const findUserError = (user, res) => {
+  if (!user) {
+    res.status(404).send({ message: 'Пользователь не найден' });
+    return;
+  }
+  res.send({ data: user });
+};
+
+const findDefaultError = (res) => {
+  res.status(500).send({ message: 'Произошла ошибка' });
+};
+
+const findValidationError = (err, res) => {
+  if (err.name === 'ValidationError') {
+    res.status(400).send({ message: err.message });
+    return;
+  }
+  findDefaultError(res);
+};
+
+const findCastError = (err, res) => {
+  if (err.name === 'CastError') {
+    res.status(400).send({ message: 'Переданы некорректные данные' });
+    return;
+  }
+  findDefaultError(res);
+};
+
+// КОНТРОЛЛЕРЫ
 const getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       findUserError(user, res);
     })
-    .catch(() => findDefaultError(res));
+    .catch((err) => findCastError(err, res));
 };
 
 const getUsers = (req, res) => {
