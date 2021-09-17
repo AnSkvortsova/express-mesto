@@ -20,8 +20,11 @@
   },
   "homepage": "https://github.com/AnSkvortsova/express-mesto#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
-    "mongoose": "^6.0.4"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.4",
+    "validator": "^13.6.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
