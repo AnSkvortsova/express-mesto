@@ -1,18 +1,24 @@
 const jwt = require('jsonwebtoken');
 
-const authorization = (req, res) => {
+const handleAuthError = (res) => {
+  res.status(401).send({ message: 'Ошибка авторизации' });
+};
+
+module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (!token) {
-    return res.status(401).send({ message: 'Ошибка авторизации' });
+    return handleAuthError(res);
   }
 
-  const payload = jwt.verify(token, 'secret_key');
+  let payload;
 
-  if (payload) {
-    req.user = payload;
+  try {
+    payload = jwt.verify(token, 'secret_key');
+  } catch (err) {
+    return handleAuthError(res);
   }
-  return res.status(401).send({ message: 'Ошибка авторизации' });
+
+  req.user = payload;
+  return next();
 };
-
-module.exports = { authorization };

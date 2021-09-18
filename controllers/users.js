@@ -32,12 +32,27 @@ const findCastError = (err, res) => {
 };
 
 // КОНТРОЛЛЕРЫ
-const getUser = (req, res) => {
+const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       findUserError(user, res);
     })
     .catch((err) => findCastError(err, res));
+};
+
+const getAuthUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      console.log(user)
+      if (!user) {
+        res
+          .status(403)
+          .send({ message: 'Доступ запрещен. Необходима авторизация' });
+        return;
+      }
+      res.send({ data: user });
+    })
+    .catch(() => findDefaultError(res));
 };
 
 const getUsers = (req, res) => {
@@ -62,11 +77,14 @@ const login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret_key', { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        httpOnly: true,
-      })
-      .end();
+      const token = jwt.sign({ _id: user._id }, 'secret_key', {
+        expiresIn: '7d',
+      });
+      res
+        .cookie('jwt', token, {
+          httpOnly: true,
+        })
+        .end();
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
@@ -104,7 +122,8 @@ const updateAvatar = (req, res) => {
 };
 
 module.exports = {
-  getUser,
+  getUserById,
+  getAuthUser,
   getUsers,
   createUser,
   login,
