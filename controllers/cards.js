@@ -27,7 +27,7 @@ const findCastError = (err, res) => {
     return;
   }
   findDefaultError(res);
-}
+};
 
 // КОНТРОЛЛЕРЫ
 const getCards = (req, res) => {
@@ -46,9 +46,19 @@ const createCard = (req, res) => {
 };
 
 const removeCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
-      findCardError(card, res);
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+      }
+      if (card.owner === req.user._id) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then((data) => res.send({data}))
+          .catch((err) => {
+            findValidationError(err, res);
+          });
+      }
+      res.status(403).send({ message: 'Невозможно удалить чужие данные' });
     })
     .catch((err) => findCastError(err, res));
 };

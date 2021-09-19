@@ -43,7 +43,6 @@ const getUserById = (req, res) => {
 const getAuthUser = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
-      console.log(user)
       if (!user) {
         res
           .status(403)
