@@ -4,19 +4,19 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    "airbnb-base",
-    "prettier"
+    'airbnb-base',
   ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: 12,
-    sourceType: "module",
+    sourceType: 'module',
   },
-  plugins: ["react", "prettier"],
+  plugins: ['react'],
   rules: {
-    "no-underscore-dangle": "off",
-    "no-console": "off"
+    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'no-console': 'off',
+    'object-curly-newline': ['error', { ImportDeclaration: 'never', ExportDeclaration: 'never' }],
   },
 };

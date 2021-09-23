@@ -20,7 +20,7 @@ router.post(
         .pattern(/^https?:\/\/(www.)?(\w+\W*)+#?$/),
     }),
   }),
-  createCard
+  createCard,
 );
 
 router.delete(
@@ -28,11 +28,10 @@ router.delete(
   celebrate({
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().length(24),
-      })
-      .unknown(true),
+        cardId: Joi.string().length(24).hex(),
+      }),
   }),
-  removeCard
+  removeCard,
 );
 
 router.put(
@@ -40,11 +39,10 @@ router.put(
   celebrate({
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().length(24),
-      })
-      .unknown(true),
+        cardId: Joi.string().length(24).hex(),
+      }),
   }),
-  likeCard
+  likeCard,
 );
 
 router.delete(
@@ -52,11 +50,10 @@ router.delete(
   celebrate({
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().length(24),
-      })
-      .unknown(true),
+        cardId: Joi.string().length(24).hex(),
+      }),
   }),
-  dislikeCard
+  dislikeCard,
 );
 
 module.exports = router;

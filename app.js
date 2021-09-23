@@ -7,6 +7,7 @@ const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const NotFound = require('./errors/NotFound');
 
 const { PORT = 3000 } = process.env;
 
@@ -21,7 +22,7 @@ mongoose.connect(
   (err) => {
     if (err) throw err;
     console.log('connected to MongoDB');
-  }
+  },
 );
 
 app.use(express.json());
@@ -35,7 +36,7 @@ app.post(
       password: Joi.string().required().min(8),
     }),
   }),
-  login
+  login,
 );
 
 app.post(
@@ -49,13 +50,17 @@ app.post(
       password: Joi.string().required().min(8),
     }),
   }),
-  createUser
+  createUser,
 );
 
 app.use(auth);
 
 app.use('/cards', routerCards);
 app.use('/users', routerUsers);
+
+app.use((req, res, next) => {
+  next(new NotFound('Маршрут не найден'));
+});
 
 app.use(errors());
 app.use((err, req, res, next) => {
