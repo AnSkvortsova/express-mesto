@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const helmet = require('helmet');
 
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
@@ -25,6 +26,7 @@ mongoose.connect(
   },
 );
 
+app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 
