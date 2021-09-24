@@ -5,29 +5,24 @@ const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const Conflict = require('../errors/Conflict');
 const NotFound = require('../errors/NotFound');
-const Forbidden = require('../errors/Forbidden');
 const Unauthorized = require('../errors/Unauthorized');
 
 const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
 
-  User.findOne({ email })
-    .then((data) => {
-      if (data) {
-        throw new Conflict('Пользователь уже существует');
+  bcrypt.hash(password, 10).then((hash) => User
+    .create({ name, about, avatar, email, password: hash })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'MongoServerError' && err.code === 11000) {
+        next(new Conflict('Пользователь уже существует'));
       }
-      bcrypt.hash(password, 10).then((hash) =>
-        User.create({ name, about, avatar, email, password: hash })
-          .then((user) => res.send({ data: user }))
-          .catch((err) => {
-            if (err.name === 'ValidationError') {
-              throw new BadRequest('Переданы некорректные данные');
-            }
-          })
-          .catch(next)
-      );
-    })
-    .catch(next);
+      if (err.name === 'ValidationError') {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    }));
 };
 
 const login = (req, res, next) => {
@@ -60,17 +55,18 @@ const getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные');
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const getAuthUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new Forbidden('Доступ запрещен. Необходима авторизация');
+        throw new NotFound('Пользователь не найден');
       }
       res.send({ data: user });
     })
@@ -89,7 +85,7 @@ const updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {
@@ -99,10 +95,11 @@ const updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные');
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -110,7 +107,7 @@ const updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => {
       if (!user) {
@@ -120,10 +117,11 @@ const updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequest('Переданы некорректные данные');
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {
